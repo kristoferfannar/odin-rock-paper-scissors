@@ -16,7 +16,6 @@ function getComputerChoice() {
             answer = SCISSORS;
             break;
     }
-    console.log(`computer chose ${answer}...`);
     return answer;
 }
 
@@ -27,58 +26,74 @@ function playOneRound(playerChoice, computerChoice) {
     } else if ( (playerChoice === ROCK && computerChoice === SCISSORS) || (playerChoice === PAPER && computerChoice === ROCK) || (playerChoice === SCISSORS && computerChoice === PAPER) ) {
         return 1;
     } else {
-        return "draw!";
+        return 0;
+    }
+}
+
+function displayRound(playerChoice, computerChoice, outcome) {
+    const result = document.querySelector("#result");
+
+    if (outcome === -1) {
+        result.textContent = `computer wins! ${computerChoice} beats ${playerChoice}`;
+    } else if (outcome === 1) {
+        result.textContent = `player wins! ${playerChoice} beats ${computerChoice}`;
+    } else {
+        result.textContent = "DRAW!";
     }
 }
 
 
-function gameOneRound() {
-    let playerChoice = prompt("Your choice:").toLowerCase();
+function gameOneRound(playerChoice) {
     let computerChoice = getComputerChoice();
-
-    if (playerChoice != ROCK && playerChoice != PAPER && playerChoice != SCISSORS) {
-        alert("input should be either: 'rock', 'paper' or 'scissors'!");
-        return;
-    }
-
     let outcome = playOneRound(playerChoice, computerChoice);
-
-    if (outcome === -1) {
-        console.log(`computer wins! ${computerChoice} beats ${playerChoice}`);
-    } else if (outcome === 1) {
-        console.log(`player wins! ${playerChoice} beats ${computerChoice}`);
-    } else {
-        console.log("DRAW!");
-    }
     
+    if (wins < 5 && losses < 5) {
+        displayRound(playerChoice, computerChoice, outcome);
+        updateScore(outcome);
+        displayScore();
+    }
+
+    if (wins >= 5 || losses >= 5) {
+        displayWinner()
+    }
+
     return outcome;
 }
 
-function play() {
-    let wins = 0;
-    let losses = 0;
-    let totalGames = 5;
-
-    for (let i = 0; i < totalGames; i++) {
-        console.log(`GAME ${i + 1}!`)
-
-        let outcome = gameOneRound();
-        if (outcome === 1) {
-            wins++;
-        } else if (outcome === -1) {
-            losses++;
-        }
-
-        console.log(`Player has one ${wins} out of ${totalGames} games`);
-    }
-    
-    if (wins > losses) {
-        console.log("Player wins the tournament!");
-    } else if (losses > wins) {
-        console.log("Computer wins the tournament!");
-    } else {
-        console.log("Tournament results in a draw!");
-    }
-
-    console.log("thanks for playing!");
+function displayScore() {
+    const score = document.querySelector("#score");
+    score.textContent = `${wins} wins - ${losses} losses - ${draws} draws`;
 }
+
+function updateScore(outcome) {
+    if (outcome === 1) {
+        wins++;
+    } else if (outcome === -1) {
+        losses++;
+    } else {
+        draws++;
+    }
+}
+
+function displayWinner() {
+    const winner = document.querySelector("#results");
+
+    if (wins > losses) {
+        winner.textContent = "Player wins the tournament!";
+    } else if (losses > wins) {
+        winner.textContent = "Computer wins the tournament!";
+    } else {
+        winner.textContent = "Tournament results in a draw!";
+    }
+}
+            
+        
+        
+let wins = 0;
+let losses = 0;
+let draws = 0; // I have to declare these here, not inside a function, because I can only declare them once.
+
+const buttons = document.querySelectorAll("button");
+
+buttons.forEach(button => button.addEventListener('click', () => {gameOneRound(button.id)} ) );
+// buttons.forEach(button => button.addEventListener('click', playOneRound(button.id)));
